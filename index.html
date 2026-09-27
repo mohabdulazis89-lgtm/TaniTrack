@@ -2,7 +2,7 @@
 <html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>TaniTrack - Jurnal & Manajemen Penanaman Tanaman</title>
     
     <!-- Mobile Web App Fullscreen Support (iOS & Android) -->
@@ -13,9 +13,6 @@
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Font Awesome Icons with Crossorigin for Safari iOS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
     
     <!-- Google Fonts Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -74,13 +71,27 @@
             -webkit-overflow-scrolling: touch;
             overscroll-behavior-y: contain;
         }
+        /* iOS Pseudo-Fullscreen Fallback */
+        body.pseudo-fullscreen {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100dvh !important;
+            z-index: 9999 !important;
+            overflow-y: auto !important;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+        }
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col antialiased selection:bg-sage-500 selection:text-white">
 
-    <div id="app" class="flex-1">
+    <div id="app" class="flex-1 flex flex-col min-h-screen">
         <!-- Header -->
-        <header class="bg-sage-700 dark:bg-slate-900 text-white sticky top-0 z-30 shadow-md backdrop-blur-md bg-opacity-95 dark:bg-opacity-95 border-b border-sage-800 dark:border-slate-800 transition-colors">
+        <header class="bg-sage-700 dark:bg-slate-900 text-white sticky top-0 z-30 shadow-md backdrop-blur-md bg-opacity-95 dark:bg-opacity-95 border-b border-sage-800 dark:border-slate-800 transition-colors pt-[env(safe-area-inset-top)]">
             <div class="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
                 <div class="flex items-center space-x-2.5">
                     <div class="w-9 h-9 sm:w-10 sm:h-10 bg-white dark:bg-slate-800 rounded-2xl flex items-center justify-center text-sage-700 dark:text-emerald-400 font-extrabold text-lg sm:text-xl shadow-inner">
@@ -95,32 +106,34 @@
                 <!-- Navigation Controls -->
                 <div class="flex items-center space-x-1.5 sm:space-x-2">
                     <!-- Fullscreen Mode Toggle -->
-                    <button onclick="toggleFullscreen()" id="fullscreen-toggle-btn" class="w-10 h-10 sm:w-auto sm:h-auto sm:p-2.5 rounded-xl bg-white/10 hover:bg-white/20 dark:bg-slate-800 dark:hover:bg-slate-700 text-white border border-white/20 dark:border-slate-700 transition duration-150 active:scale-95 flex items-center justify-center cursor-pointer" title="Layar Penuh (Full Screen)">
-                        <i id="fullscreen-icon" class="fa-solid fa-expand text-xs sm:text-sm"></i>
+                    <button onclick="toggleFullscreen()" id="fullscreen-toggle-btn" class="w-10 h-10 sm:p-2.5 rounded-xl bg-white/10 hover:bg-white/20 dark:bg-slate-800 dark:hover:bg-slate-700 text-white border border-white/20 dark:border-slate-700 transition duration-150 active:scale-95 flex items-center justify-center cursor-pointer" title="Layar Penuh (Full Screen)">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
                     </button>
 
                     <!-- Dark/Light Theme Toggle -->
-                    <button onclick="toggleDarkMode()" id="theme-toggle-btn" class="w-10 h-10 sm:w-auto sm:h-auto sm:p-2.5 rounded-xl bg-white/10 hover:bg-white/20 dark:bg-slate-800 dark:hover:bg-slate-700 text-white border border-white/20 dark:border-slate-700 transition duration-150 active:scale-95 flex items-center justify-center cursor-pointer" title="Beralih Mode Gelap/Terang">
-                        <i id="theme-icon" class="fa-solid fa-moon text-amber-300 text-sm sm:text-base"></i>
+                    <button onclick="toggleDarkMode()" id="theme-toggle-btn" class="w-10 h-10 sm:p-2.5 rounded-xl bg-white/10 hover:bg-white/20 dark:bg-slate-800 dark:hover:bg-slate-700 text-white border border-white/20 dark:border-slate-700 transition duration-150 active:scale-95 flex items-center justify-center cursor-pointer" title="Beralih Mode Gelap/Terang">
+                        <span id="theme-icon-container">
+                            <svg class="w-4 h-4 text-amber-300" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/></svg>
+                        </span>
                     </button>
 
-                    <!-- Kamus Ikon Button -->
-                    <button onclick="toggleIconLegendModal()" class="h-10 sm:h-auto bg-sage-600 hover:bg-sage-500 dark:bg-slate-800 dark:hover:bg-slate-700 text-white font-medium px-3 py-2 rounded-xl text-xs sm:text-sm transition duration-150 active:scale-95 flex items-center space-x-1.5 border border-sage-500/40 dark:border-slate-700 cursor-pointer" title="Panduan Keterangan Ikon & Masa Tanam">
-                        <i class="fa-solid fa-book-bookmark text-amber-300"></i>
-                        <span>Kamus & Panduan</span>
+                    <!-- Kamus Button -->
+                    <button onclick="toggleIconLegendModal()" class="h-10 bg-sage-600 hover:bg-sage-500 dark:bg-slate-800 dark:hover:bg-slate-700 text-white font-medium px-3 py-2 rounded-xl text-xs sm:text-sm transition duration-150 active:scale-95 flex items-center space-x-1.5 border border-sage-500/40 dark:border-slate-700 cursor-pointer" title="Kamus Keterangan Ikon & Masa Tanam">
+                        <span class="text-base">📖</span>
+                        <span>Kamus</span>
                     </button>
                 </div>
             </div>
         </header>
 
-        <main class="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
+        <main class="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6 flex-1 w-full pb-[calc(1rem+env(safe-area-inset-bottom))]">
             
             <!-- Dashboard Stats Cards Grid -->
             <section class="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
                 
                 <div class="bg-white dark:bg-slate-900 p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-800 flex items-center space-x-3 transition">
-                    <div class="bg-sage-100 dark:bg-sage-900/40 text-sage-700 dark:text-sage-400 p-2.5 sm:p-3 rounded-2xl shrink-0">
-                        <i class="fa-solid fa-seedling text-base sm:text-2xl"></i>
+                    <div class="bg-sage-100 dark:bg-sage-900/40 text-sage-700 dark:text-sage-400 p-2.5 sm:p-3 rounded-2xl shrink-0 text-xl">
+                        🪴
                     </div>
                     <div class="min-w-0">
                         <p class="text-[10px] sm:text-[11px] font-semibold text-slate-500 dark:text-slate-400 truncate">Total Tanaman</p>
@@ -129,8 +142,8 @@
                 </div>
 
                 <div class="bg-white dark:bg-slate-900 p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-800 flex items-center space-x-3 transition">
-                    <div class="bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 p-2.5 sm:p-3 rounded-2xl shrink-0">
-                        <i class="fa-solid fa-cloud-sun-rain text-base sm:text-2xl"></i>
+                    <div class="bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 p-2.5 sm:p-3 rounded-2xl shrink-0 text-xl">
+                        ☀️
                     </div>
                     <div class="min-w-0">
                         <p class="text-[10px] sm:text-[11px] font-semibold text-slate-500 dark:text-slate-400 truncate">Aktif Tumbuh</p>
@@ -139,8 +152,8 @@
                 </div>
 
                 <div class="bg-white dark:bg-slate-900 p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-800 flex items-center space-x-3 transition">
-                    <div class="bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 p-2.5 sm:p-3 rounded-2xl shrink-0">
-                        <i class="fa-solid fa-basket-shopping text-base sm:text-2xl"></i>
+                    <div class="bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 p-2.5 sm:p-3 rounded-2xl shrink-0 text-xl">
+                        🧺
                     </div>
                     <div class="min-w-0">
                         <p class="text-[10px] sm:text-[11px] font-semibold text-slate-500 dark:text-slate-400 truncate">Siap Panen</p>
@@ -149,8 +162,8 @@
                 </div>
 
                 <div class="bg-white dark:bg-slate-900 p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-800 flex items-center space-x-3 transition">
-                    <div class="bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 p-2.5 sm:p-3 rounded-2xl shrink-0">
-                        <i class="fa-solid fa-square-check text-base sm:text-2xl"></i>
+                    <div class="bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 p-2.5 sm:p-3 rounded-2xl shrink-0 text-xl">
+                        ✅
                     </div>
                     <div class="min-w-0">
                         <p class="text-[10px] sm:text-[11px] font-semibold text-slate-500 dark:text-slate-400 truncate">Selesai Panen</p>
@@ -164,7 +177,7 @@
             <section class="space-y-2">
                 <div class="flex items-center justify-between px-1">
                     <h3 class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                        <i class="fa-solid fa-chart-pie text-sage-600 dark:text-emerald-400"></i> Rincian Fase Pertumbuhan Aktif
+                        <span>📊</span> Rincian Fase Pertumbuhan Aktif
                     </h3>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
@@ -214,7 +227,9 @@
                     <!-- Search & Filter Bar -->
                     <div class="bg-white dark:bg-slate-900 p-3 sm:p-3.5 rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row gap-2.5 justify-between items-center">
                         <div class="relative w-full sm:w-64">
-                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+                                🔍
+                            </div>
                             <input type="text" id="search-input" oninput="renderPlants()" placeholder="Cari nama tanaman..." class="w-full pl-9 pr-3 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-500 dark:text-white">
                         </div>
                         
@@ -253,7 +268,7 @@
                             🌱
                         </div>
                         <h3 class="text-sm sm:text-base font-bold text-slate-800 dark:text-white">Belum ada tanaman tersimpan</h3>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">Mulai catat penanaman Anda dengan memilih dari preset tanaman lengkap atau kustomisasi manual.</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">Mulai catat penanaman Anda dengan mengetuk tombol (+) di kanan bawah.</p>
                     </div>
 
                 </div>
@@ -263,8 +278,8 @@
                     <div class="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-3xl shadow-sm border border-slate-200/80 dark:border-slate-800">
                         <div class="flex items-center justify-between mb-3.5 pb-2.5 border-b border-slate-100 dark:border-slate-800">
                             <div class="flex items-center space-x-2.5">
-                                <div class="bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 p-2 rounded-xl">
-                                    <i class="fa-solid fa-calendar-check text-sm"></i>
+                                <div class="bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 p-2 rounded-xl text-base">
+                                    📅
                                 </div>
                                 <h2 class="font-bold text-slate-800 dark:text-white text-xs sm:text-base">Tugas & Perawatan Hari Ini</h2>
                             </div>
@@ -283,8 +298,8 @@
     </div>
 
     <!-- Floating Action Button (FAB) -->
-    <button onclick="openAddPlantModal()" class="fixed bottom-5 right-5 sm:bottom-8 sm:right-8 w-14 h-14 bg-sage-600 dark:bg-emerald-600 hover:bg-sage-700 dark:hover:bg-emerald-500 text-white rounded-full shadow-2xl border-2 border-white dark:border-slate-800 flex items-center justify-center text-xl z-40 active:scale-90 transition-transform cursor-pointer" title="Tambah Tanaman Baru">
-        <i class="fa-solid fa-plus"></i>
+    <button onclick="openAddPlantModal()" class="fixed bottom-5 right-5 sm:bottom-8 sm:right-8 w-14 h-14 bg-sage-600 dark:bg-emerald-600 hover:bg-sage-700 dark:hover:bg-emerald-500 text-white rounded-full shadow-2xl border-2 border-white dark:border-slate-800 flex items-center justify-center text-2xl z-40 active:scale-90 transition-transform cursor-pointer" title="Tambah Tanaman Baru">
+        +
     </button>
 
     <!-- Modal 1: Tambah Tanaman Baru -->
@@ -295,8 +310,8 @@
                 <h3 class="text-sm sm:text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
                     <span>🌱</span> Tambah Tanaman Baru
                 </h3>
-                <button onclick="closeAddPlantModal()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center cursor-pointer">
-                    <i class="fa-solid fa-xmark text-base"></i>
+                <button onclick="closeAddPlantModal()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center cursor-pointer font-bold">
+                    ✕
                 </button>
             </div>
 
@@ -418,7 +433,7 @@
         </div>
     </div>
 
-    <!-- Modal 2: Detail Tanaman & Timeline (Safari iOS Optimized) -->
+    <!-- Modal 2: Detail Tanaman & Timeline -->
     <div id="detail-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-3 sm:p-6">
         <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full max-h-[85vh] sm:max-h-[88dvh] flex flex-col shadow-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-6 overflow-hidden">
             <div id="detail-content" class="flex flex-col h-full min-h-0">
@@ -427,22 +442,22 @@
         </div>
     </div>
 
-    <!-- Modal 3: Kamus Ikon & Panduan Masa Tanam -->
+    <!-- Modal 3: Kamus Ikon -->
     <div id="legend-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-3 sm:p-6">
         <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full max-h-[85vh] sm:max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-6">
             <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800 shrink-0">
                 <h3 class="text-xs sm:text-base font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                    <span>📖</span> Kamus Ikon & Panduan Masa Tanam
+                    <span>📖</span> Kamus Ikon
                 </h3>
-                <button onclick="toggleIconLegendModal()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center cursor-pointer">
-                    <i class="fa-solid fa-xmark text-base"></i>
+                <button onclick="toggleIconLegendModal()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center cursor-pointer font-bold">
+                    ✕
                 </button>
             </div>
 
             <div class="flex-1 overflow-y-auto custom-scrollbar my-3 pr-1 space-y-4 text-xs text-slate-700 dark:text-slate-300">
                 <div>
                     <h4 class="font-bold text-sage-800 dark:text-emerald-400 uppercase tracking-wider text-[11px] mb-2 flex items-center gap-1.5">
-                        <i class="fa-solid fa-chart-line text-sage-600 dark:text-emerald-400"></i> Keterangan 4 Fase Pertumbuhan Utama
+                        Keterangan 4 Fase Pertumbuhan Utama
                     </h4>
                     <div class="grid grid-cols-1 gap-2">
                         <div class="p-2.5 bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/50 rounded-2xl flex items-start gap-2.5">
@@ -478,7 +493,7 @@
 
                 <div>
                     <h4 class="font-bold text-sage-800 dark:text-emerald-400 uppercase tracking-wider text-[11px] mb-2 flex items-center gap-1.5">
-                        <i class="fa-solid fa-list-check text-sage-600 dark:text-emerald-400"></i> Ikon Aktivitas Jurnal
+                        Ikon Aktivitas Jurnal
                     </h4>
                     <div class="grid grid-cols-1 xs:grid-cols-2 gap-2 text-[11px]">
                         <div class="p-2 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 flex items-center gap-2">
@@ -511,7 +526,7 @@
                 <!-- Table Panduan Estimasi Masa Tanam -->
                 <div>
                     <h4 class="font-bold text-sage-800 dark:text-emerald-400 uppercase tracking-wider text-[11px] mb-2 flex items-center gap-1.5">
-                        <i class="fa-solid fa-table-list text-sage-600 dark:text-emerald-400"></i> Panduan Estimasi Masa Tanam Tanaman Popular
+                        Panduan Estimasi Masa Tanam Tanaman Populer
                     </h4>
                     <div class="overflow-x-auto custom-scrollbar border border-slate-200 dark:border-slate-700 rounded-2xl">
                         <table class="w-full text-left text-[11px]">
@@ -546,8 +561,8 @@
         <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full max-h-[85vh] sm:max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-6">
             <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800 shrink-0">
                 <h3 class="text-xs sm:text-base font-bold text-slate-800 dark:text-white">Catat Jurnal Aktivitas</h3>
-                <button onclick="closeLogModal()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center cursor-pointer">
-                    <i class="fa-solid fa-xmark text-base"></i>
+                <button onclick="closeLogModal()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center cursor-pointer font-bold">
+                    ✕
                 </button>
             </div>
 
@@ -707,14 +722,14 @@
 
         function initDarkMode() {
             const savedTheme = localStorage.getItem('taniTrack_theme');
-            const icon = document.getElementById('theme-icon');
+            const iconContainer = document.getElementById('theme-icon-container');
             
             if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 document.documentElement.classList.add('dark');
-                if (icon) icon.className = 'fa-solid fa-sun text-amber-300 text-sm sm:text-base';
+                if (iconContainer) iconContainer.innerHTML = `<svg class="w-4 h-4 text-amber-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 100 2h1z" clip-rule="evenodd"/></svg>`;
             } else {
                 document.documentElement.classList.remove('dark');
-                if (icon) icon.className = 'fa-solid fa-moon text-amber-300 text-sm sm:text-base';
+                if (iconContainer) iconContainer.innerHTML = `<svg class="w-4 h-4 text-amber-300" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/></svg>`;
             }
         }
 
@@ -722,47 +737,73 @@
             const isDark = document.documentElement.classList.toggle('dark');
             localStorage.setItem('taniTrack_theme', isDark ? 'dark' : 'light');
             
-            const icon = document.getElementById('theme-icon');
+            const iconContainer = document.getElementById('theme-icon-container');
             if (isDark) {
-                icon.className = 'fa-solid fa-sun text-amber-300 text-sm sm:text-base';
+                if (iconContainer) iconContainer.innerHTML = `<svg class="w-4 h-4 text-amber-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 100 2h1z" clip-rule="evenodd"/></svg>`;
             } else {
-                icon.className = 'fa-solid fa-moon text-amber-300 text-sm sm:text-base';
+                if (iconContainer) iconContainer.innerHTML = `<svg class="w-4 h-4 text-amber-300" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/></svg>`;
             }
         }
 
         // FULLSCREEN TOGGLE FUNCTION (Android & iOS Safari Compatible)
         function toggleFullscreen() {
             const elem = document.documentElement;
-            const isFS = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+            const isFS = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement || document.body.classList.contains('pseudo-fullscreen');
 
             if (!isFS) {
                 if (elem.requestFullscreen) {
-                    elem.requestFullscreen().catch(err => console.log('Fullscreen error:', err));
-                } else if (elem.webkitRequestFullscreen) { /* Safari & iOS */
-                    elem.webkitRequestFullscreen();
-                } else if (elem.msRequestFullscreen) { /* IE11 */
+                    elem.requestFullscreen().catch(() => enablePseudoFullscreen());
+                } else if (elem.webkitRequestFullscreen) {
+                    try {
+                        elem.webkitRequestFullscreen();
+                    } catch(e) {
+                        enablePseudoFullscreen();
+                    }
+                } else if (elem.msRequestFullscreen) {
                     elem.msRequestFullscreen();
-                } else if (elem.mozRequestFullScreen) { /* Firefox */
+                } else if (elem.mozRequestFullScreen) {
                     elem.mozRequestFullScreen();
+                } else {
+                    enablePseudoFullscreen();
                 }
             } else {
                 if (document.exitFullscreen) {
-                    document.exitFullscreen();
+                    document.exitFullscreen().catch(() => disablePseudoFullscreen());
                 } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
+                    try {
+                        document.webkitExitFullscreen();
+                    } catch(e) {
+                        disablePseudoFullscreen();
+                    }
                 } else if (document.msExitFullscreen) {
                     document.msExitFullscreen();
                 } else if (document.mozCancelFullScreen) {
                     document.mozCancelFullScreen();
+                } else {
+                    disablePseudoFullscreen();
                 }
             }
         }
 
+        function enablePseudoFullscreen() {
+            document.body.classList.add('pseudo-fullscreen');
+            updateFullscreenIcon();
+        }
+
+        function disablePseudoFullscreen() {
+            document.body.classList.remove('pseudo-fullscreen');
+            updateFullscreenIcon();
+        }
+
         function updateFullscreenIcon() {
-            const icon = document.getElementById('fullscreen-icon');
-            const isFS = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
-            if (icon) {
-                icon.className = isFS ? 'fa-solid fa-compress text-xs sm:text-sm' : 'fa-solid fa-expand text-xs sm:text-sm';
+            const btn = document.getElementById('fullscreen-toggle-btn');
+            const isFS = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement || document.body.classList.contains('pseudo-fullscreen');
+            if (btn) {
+                if (isFS) {
+                    btn.innerHTML = `<svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 9L4 4m0 0l5 0m-5 0l0 5m11 4l5 5m0 0l-5 0m5 0l0-5M9 15l-5 5m0 0l5 0m-5 0l0-5m11-4l5-5m0 0l-5 0m5 0l0 5"/></svg>`;
+                } else {
+                    btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>`;
+                }
             }
         }
 
@@ -1216,15 +1257,15 @@
                     <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
                         <div class="flex items-center space-x-3 min-w-0">
                             <button onclick="quickWater('${p.id}')" class="w-11 h-11 sm:w-10 sm:h-10 rounded-2xl flex items-center justify-center shrink-0 active:scale-90 transition cursor-pointer ${wateredToday ? 'bg-blue-500 text-white shadow-sm' : 'bg-white dark:bg-slate-700 text-blue-500 border border-blue-200 dark:border-slate-600 hover:bg-blue-50'}" title="Siram Hari Ini">
-                                <i class="fa-solid fa-droplet text-sm sm:text-xs"></i>
+                                💧
                             </button>
                             <div class="min-w-0">
                                 <h4 class="text-xs font-bold text-slate-800 dark:text-white truncate">${p.name}</h4>
                                 <p class="text-[10px] text-slate-400 dark:text-slate-500 truncate">${prog.phase} &bull; ${wateredToday ? 'Sudah Disiram Hari Ini' : 'Perlu Penyiraman'}</p>
                             </div>
                         </div>
-                        <button onclick="openLogModal('${p.id}')" class="w-9 h-9 rounded-xl bg-white dark:bg-slate-700/80 text-slate-400 hover:text-sage-600 dark:hover:text-emerald-400 flex items-center justify-center shrink-0 active:scale-90 transition border border-slate-200/60 dark:border-slate-600 cursor-pointer" title="Tambah Catatan">
-                            <i class="fa-solid fa-plus text-xs"></i>
+                        <button onclick="openLogModal('${p.id}')" class="w-9 h-9 rounded-xl bg-white dark:bg-slate-700/80 text-slate-400 hover:text-sage-600 dark:hover:text-emerald-400 flex items-center justify-center shrink-0 active:scale-90 transition border border-slate-200/60 dark:border-slate-600 cursor-pointer font-bold" title="Tambah Catatan">
+                            +
                         </button>
                     </div>
                 `;
@@ -1284,8 +1325,8 @@
                             <p class="text-xs text-slate-400 capitalize">${plant.category} &bull; ${plant.location}</p>
                         </div>
                     </div>
-                    <button onclick="closeDetailModal()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center shrink-0 cursor-pointer">
-                        <i class="fa-solid fa-xmark text-base"></i>
+                    <button onclick="closeDetailModal()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center shrink-0 cursor-pointer font-bold">
+                        ✕
                     </button>
                 </div>
 
@@ -1334,7 +1375,7 @@
                     <div>
                         <div class="flex justify-between items-center mb-2">
                             <h4 class="text-xs sm:text-sm font-bold text-slate-800 dark:text-white flex items-center gap-1.5">
-                                <i class="fa-solid fa-clock-rotate-left text-sage-600 dark:text-emerald-400"></i> Riwayat Jurnal
+                                Riwayat Jurnal
                             </h4>
                             <button onclick="closeDetailModal(); openLogModal('${plant.id}')" class="text-xs text-sage-700 dark:text-emerald-400 hover:underline font-bold cursor-pointer">
                                 + Tambah Log
@@ -1350,12 +1391,12 @@
                 <!-- Sticky Footer for Safari iOS (Contains Delete Button) -->
                 <div class="flex justify-between items-center pt-3 mt-2 border-t border-slate-100 dark:border-slate-800 shrink-0 bg-white dark:bg-slate-900 z-10">
                     <button onclick="deletePlant('${plant.id}')" class="px-3 py-2 bg-rose-50 dark:bg-rose-950/50 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-400 rounded-xl text-xs font-bold transition border border-rose-200/80 dark:border-rose-900/50 active:scale-95 flex items-center gap-1.5 cursor-pointer">
-                        <i class="fa-solid fa-trash-can text-xs"></i> <span>Hapus Tanaman</span>
+                        <span>Hapus Tanaman</span>
                     </button>
                     <div class="flex gap-2">
                         ${plant.statusOverride !== 'completed' ? `
                             <button onclick="markPlantCompleted('${plant.id}')" class="px-3 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl shadow transition active:scale-95 cursor-pointer flex items-center gap-1">
-                                <i class="fa-solid fa-check text-xs"></i> <span>Selesai Panen</span>
+                                <span>🧺 Selesai Panen</span>
                             </button>
                         ` : ''}
                         <button onclick="closeDetailModal()" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 transition cursor-pointer">
