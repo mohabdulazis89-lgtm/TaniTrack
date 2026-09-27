@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TaniTrack - Jurnal & Manajemen Penanaman Tanaman</title>
     
+    <!-- Mobile Web App Fullscreen Support (iOS & Android) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#335433">
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -88,6 +94,11 @@
 
                 <!-- Navigation Controls -->
                 <div class="flex items-center space-x-1.5 sm:space-x-2">
+                    <!-- Fullscreen Mode Toggle -->
+                    <button onclick="toggleFullscreen()" id="fullscreen-toggle-btn" class="w-10 h-10 sm:w-auto sm:h-auto sm:p-2.5 rounded-xl bg-white/10 hover:bg-white/20 dark:bg-slate-800 dark:hover:bg-slate-700 text-white border border-white/20 dark:border-slate-700 transition duration-150 active:scale-95 flex items-center justify-center cursor-pointer" title="Layar Penuh (Full Screen)">
+                        <i id="fullscreen-icon" class="fa-solid fa-expand text-xs sm:text-sm"></i>
+                    </button>
+
                     <!-- Dark/Light Theme Toggle -->
                     <button onclick="toggleDarkMode()" id="theme-toggle-btn" class="w-10 h-10 sm:w-auto sm:h-auto sm:p-2.5 rounded-xl bg-white/10 hover:bg-white/20 dark:bg-slate-800 dark:hover:bg-slate-700 text-white border border-white/20 dark:border-slate-700 transition duration-150 active:scale-95 flex items-center justify-center cursor-pointer" title="Beralih Mode Gelap/Terang">
                         <i id="theme-icon" class="fa-solid fa-moon text-amber-300 text-sm sm:text-base"></i>
@@ -719,6 +730,46 @@
             }
         }
 
+        // FULLSCREEN TOGGLE FUNCTION (Android & iOS Safari Compatible)
+        function toggleFullscreen() {
+            const elem = document.documentElement;
+            const isFS = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+
+            if (!isFS) {
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen().catch(err => console.log('Fullscreen error:', err));
+                } else if (elem.webkitRequestFullscreen) { /* Safari & iOS */
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) { /* IE11 */
+                    elem.msRequestFullscreen();
+                } else if (elem.mozRequestFullScreen) { /* Firefox */
+                    elem.mozRequestFullScreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                }
+            }
+        }
+
+        function updateFullscreenIcon() {
+            const icon = document.getElementById('fullscreen-icon');
+            const isFS = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+            if (icon) {
+                icon.className = isFS ? 'fa-solid fa-compress text-xs sm:text-sm' : 'fa-solid fa-expand text-xs sm:text-sm';
+            }
+        }
+
+        document.addEventListener('fullscreenchange', updateFullscreenIcon);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenIcon);
+        document.addEventListener('mozfullscreenchange', updateFullscreenIcon);
+
         function loadData() {
             const stored = localStorage.getItem('taniTrack_plants');
             if (stored) {
@@ -1299,7 +1350,7 @@
                 <!-- Sticky Footer for Safari iOS (Contains Delete Button) -->
                 <div class="flex justify-between items-center pt-3 mt-2 border-t border-slate-100 dark:border-slate-800 shrink-0 bg-white dark:bg-slate-900 z-10">
                     <button onclick="deletePlant('${plant.id}')" class="px-3 py-2 bg-rose-50 dark:bg-rose-950/50 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-400 rounded-xl text-xs font-bold transition border border-rose-200/80 dark:border-rose-900/50 active:scale-95 flex items-center gap-1.5 cursor-pointer">
-                        <i class="fa-solid fa-trash-can text-xs"></i> <span>🗑️ Hapus Tanaman</span>
+                        <i class="fa-solid fa-trash-can text-xs"></i> <span>Hapus Tanaman</span>
                     </button>
                     <div class="flex gap-2">
                         ${plant.statusOverride !== 'completed' ? `
