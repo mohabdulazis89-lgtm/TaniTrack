@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TaniTrack - Jurnal & Manajemen Penanaman Tanaman</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        sage: {
+                            50: '#f2f7f2',
+                            100: '#e1ede1',
+                            200: '#c5dcc5',
+                            300: '#9dc39d',
+                            400: '#72a372',
+                            500: '#528652',
+                            600: '#3f6b3f',
+                            700: '#335433',
+                            800: '#2a442a',
+                            900: '#233823',
+                            950: '#111d11'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #334155;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col antialiased selection:bg-sage-500 selection:text-white">
+
+    <div id="app" class="flex-1">
+        <!-- Header -->
+        <header class="bg-sage-700 dark:bg-slate-900 text-white sticky top-0 z-30 shadow-md backdrop-blur-md bg-opacity-95 dark:bg-opacity-95 border-b border-sage-800 dark:border-slate-800 transition-colors">
+            <div class="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+                <div class="flex items-center space-x-2.5">
+                    <div class="w-9 h-9 sm:w-10 sm:h-10 bg-white dark:bg-slate-800 rounded-2xl flex items-center justify-center text-sage-700 dark:text-emerald-400 font-extrabold text-lg sm:text-xl shadow-inner">
+                        🌱
+                    </div>
+                    <div>
+                        <h1 class="font-black text-base sm:text-xl tracking-tight leading-none text-white">TaniTrack</h1>
+                        <p class="text-[10px] sm:text-xs text-sage-200 dark:text-slate-400 font-medium hidden xs:block">Jurnal & Estimasi Penanaman Tanaman</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="flex items-center space-x-1.5 sm:space-x-2">
+                    <!-- Dark/Light Theme Toggle -->
+                    <button onclick="toggleDarkMode()" id="theme-toggle-btn" class="w-10 h-10 sm:w-auto sm:h-auto sm:p-2.5 rounded-xl bg-white/10 hover:bg-white/20 dark:bg-slate-800 dark:hover:bg-slate-700 text-white border border-white/20 dark:border-slate-700 transition duration-150 active:scale-95 flex items-center justify-center cursor-pointer" title="Beralih Mode Gelap/Terang">
+                        <i id="theme-icon" class="fa-solid fa-moon text-amber-300 text-sm sm:text-base"></i>
+                    </button>
+
+                    <!-- Kamus Ikon Button -->
+                    <button onclick="toggleIconLegendModal()" class="h-10 sm:h-auto bg-sage-600 hover:bg-sage-500 dark:bg-slate-800 dark:hover:bg-slate-700 text-white font-medium px-3 py-2 rounded-xl text-xs sm:text-sm transition duration-150 active:scale-95 flex items-center space-x-1.5 border border-sage-500/40 dark:border-slate-700 cursor-pointer" title="Panduan Keterangan Ikon & Masa Tanam">
+                        <i class="fa-solid fa-book-bookmark text-amber-300"></i>
+                        <span class="hidden md:inline">Kamus & Panduan</span>
+                    </button>
+
+                    <!-- Tambah Tanaman Button (Header) -->
+                    <button onclick="openAddPlantModal()" class="h-10 sm:h-auto bg-white hover:bg-sage-50 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-sage-800 dark:text-white font-bold px-3 sm:px-3.5 py-2 rounded-xl text-xs sm:text-sm shadow-md hover:shadow-lg transition duration-150 active:scale-95 flex items-center space-x-1.5 border border-sage-200 dark:border-emerald-500 cursor-pointer">
+                        <i class="fa-solid fa-plus text-sage-600 dark:text-white"></i>
+                        <span class="hidden xs:inline sm:inline whitespace-nowrap">Tambah Tanaman</span>
+                        <span class="inline xs:hidden sm:hidden">Tambah</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
+            
+            <!-- Dashboard Stats Cards Grid -->
+            <section class="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
+                
+                <div class="bg-white dark:bg-slate-900 p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-800 flex items-center space-x-3 transition">
+                    <div class="bg-sage-100 dark:bg-sage-900/40 text-sage-700 dark:text-sage-400 p-2.5 sm:p-3 rounded-2xl shrink-0">
+                        <i class="fa-solid fa-seedling text-base sm:text-2xl"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-[10px] sm:text-[11px] font-semibold text-slate-500 dark:text-slate-400 truncate">Total Tanaman</p>
+                        <h3 id="stat-total" class="text-base sm:text-2xl font-extrabold text-slate-800 dark:text-white">0</h3>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-900 p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-800 flex items-center space-x-3 transition">
+                    <div class="bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 p-2.5 sm:p-3 rounded-2xl shrink-0">
+                        <i class="fa-solid fa-cloud-sun-rain text-base sm:text-2xl"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-[10px] sm:text-[11px] font-semibold text-slate-500 dark:text-slate-400 truncate">Aktif Tumbuh</p>
+                        <h3 id="stat-growing" class="text-base sm:text-2xl font-extrabold text-slate-800 dark:text-white">0</h3>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-900 p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-800 flex items-center space-x-3 transition">
+                    <div class="bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 p-2.5 sm:p-3 rounded-2xl shrink-0">
+                        <i class="fa-solid fa-basket-shopping text-base sm:text-2xl"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-[10px] sm:text-[11px] font-semibold text-slate-500 dark:text-slate-400 truncate">Siap Panen</p>
+                        <h3 id="stat-ready" class="text-base sm:text-2xl font-extrabold text-slate-800 dark:text-white">0</h3>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-900 p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-800 flex items-center space-x-3 transition">
+                    <div class="bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 p-2.5 sm:p-3 rounded-2xl shrink-0">
+                        <i class="fa-solid fa-square-check text-base sm:text-2xl"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-[10px] sm:text-[11px] font-semibold text-slate-500 dark:text-slate-400 truncate">Selesai Panen</p>
+                        <h3 id="stat-finished" class="text-base sm:text-2xl font-extrabold text-slate-800 dark:text-white">0</h3>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- Dashboard Breakdown Per Fase Pertumbuhan -->
+            <section class="space-y-2">
+                <div class="flex items-center justify-between px-1">
+                    <h3 class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-chart-pie text-sage-600 dark:text-emerald-400"></i> Rincian Fase Pertumbuhan Aktif
+                    </h3>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+                    <!-- 1. Semai -->
+                    <div class="bg-white dark:bg-slate-900 p-2.5 sm:p-3 rounded-2xl border border-blue-200/80 dark:border-blue-900/50 flex items-center space-x-2.5 shadow-sm">
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 bg-blue-50 dark:bg-blue-950/60 rounded-xl flex items-center justify-center text-lg shrink-0">🌱</div>
+                        <div class="min-w-0">
+                            <p class="text-[10px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400 truncate">1. Semai</p>
+                            <h4 id="stat-semai" class="text-sm sm:text-lg font-extrabold text-blue-700 dark:text-blue-300">0</h4>
+                        </div>
+                    </div>
+
+                    <!-- 2. Vegetatif -->
+                    <div class="bg-white dark:bg-slate-900 p-2.5 sm:p-3 rounded-2xl border border-emerald-200/80 dark:border-emerald-900/50 flex items-center space-x-2.5 shadow-sm">
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 bg-emerald-50 dark:bg-emerald-950/60 rounded-xl flex items-center justify-center text-lg shrink-0">🌿</div>
+                        <div class="min-w-0">
+                            <p class="text-[10px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400 truncate">2. Vegetatif</p>
+                            <h4 id="stat-vegetatif" class="text-sm sm:text-lg font-extrabold text-emerald-700 dark:text-emerald-300">0</h4>
+                        </div>
+                    </div>
+
+                    <!-- 3. Generatif -->
+                    <div class="bg-white dark:bg-slate-900 p-2.5 sm:p-3 rounded-2xl border border-purple-200/80 dark:border-purple-900/50 flex items-center space-x-2.5 shadow-sm">
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 bg-purple-50 dark:bg-purple-950/60 rounded-xl flex items-center justify-center text-lg shrink-0">🌸</div>
+                        <div class="min-w-0">
+                            <p class="text-[10px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400 truncate">3. Generatif</p>
+                            <h4 id="stat-generatif" class="text-sm sm:text-lg font-extrabold text-purple-700 dark:text-purple-300">0</h4>
+                        </div>
+                    </div>
+
+                    <!-- 4. Reproduktif -->
+                    <div class="bg-white dark:bg-slate-900 p-2.5 sm:p-3 rounded-2xl border border-pink-200/80 dark:border-pink-900/50 flex items-center space-x-2.5 shadow-sm">
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 bg-pink-50 dark:bg-pink-950/60 rounded-xl flex items-center justify-center text-lg shrink-0">🍇</div>
+                        <div class="min-w-0">
+                            <p class="text-[10px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400 truncate">4. Reproduktif</p>
+                            <h4 id="stat-reproduktif" class="text-sm sm:text-lg font-extrabold text-pink-700 dark:text-pink-300">0</h4>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
+                
+                <!-- Left Section: Search & Cards Grid -->
+                <div class="lg:col-span-2 space-y-3.5 sm:space-y-4">
+                    
+                    <!-- Search & Filter Bar -->
+                    <div class="bg-white dark:bg-slate-900 p-3 sm:p-3.5 rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row gap-2.5 justify-between items-center">
+                        <div class="relative w-full sm:w-64">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            <input type="text" id="search-input" oninput="renderPlants()" placeholder="Cari nama tanaman..." class="w-full pl-9 pr-3 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-500 dark:text-white">
+                        </div>
+                        
+                        <div class="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0 custom-scrollbar">
+                            <select id="filter-category" onchange="renderPlants()" class="flex-1 sm:flex-none px-3 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-500 text-slate-700 dark:text-slate-200 font-medium">
+                                <option value="all">Semua Kategori</option>
+                                <option value="sayur">Sayuran 🥬</option>
+                                <option value="buah">Buah-buahan 🍎</option>
+                                <option value="herba">Herbal & Rempah 🌿</option>
+                                <option value="biji">Biji-bijian & Palawija 🌾</option>
+                                <option value="bunga">Bunga & Hias 🌻</option>
+                                <option value="lainnya">Lainnya / Kustom 🪴</option>
+                            </select>
+
+                            <select id="filter-status" onchange="renderPlants()" class="flex-1 sm:flex-none px-3 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-500 text-slate-700 dark:text-slate-200 font-medium">
+                                <option value="all">Semua Status</option>
+                                <option value="active">Aktif Tumbuh (Semua)</option>
+                                <option value="penanaman">🌱 Fase 1: Semai</option>
+                                <option value="vegetatif">🌿 Fase 2: Vegetatif</option>
+                                <option value="generatif">🌸 Fase 3: Generatif</option>
+                                <option value="reproduktif">🍇 Fase 4: Reproduktif</option>
+                                <option value="ready">🧺 Siap Panen</option>
+                                <option value="completed">✅ Selesai Panen</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Plants Cards Grid -->
+                    <div id="plants-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+                        <!-- Dynamic plant cards injected via JS -->
+                    </div>
+
+                    <!-- Empty State Placeholder -->
+                    <div id="empty-state" class="hidden bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-slate-300 dark:border-slate-800 p-6 sm:p-8 text-center">
+                        <div class="w-14 h-14 sm:w-16 sm:h-16 bg-sage-50 dark:bg-sage-900/30 rounded-full flex items-center justify-center mx-auto mb-3 text-sage-600 dark:text-sage-400 text-2xl sm:text-3xl">
+                            🌱
+                        </div>
+                        <h3 class="text-sm sm:text-base font-bold text-slate-800 dark:text-white">Belum ada tanaman tersimpan</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">Mulai catat penanaman Anda dengan memilih dari preset tanaman lengkap atau kustomisasi manual.</p>
+                        <button onclick="openAddPlantModal()" class="mt-4 px-5 py-2.5 bg-sage-600 hover:bg-sage-700 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow active:scale-95 transition cursor-pointer">
+                            + Tambah Tanaman Pertama
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- Right Section: Daily Care Checklist -->
+                <div class="space-y-4">
+                    <div class="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-3xl shadow-sm border border-slate-200/80 dark:border-slate-800">
+                        <div class="flex items-center justify-between mb-3.5 pb-2.5 border-b border-slate-100 dark:border-slate-800">
+                            <div class="flex items-center space-x-2.5">
+                                <div class="bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 p-2 rounded-xl">
+                                    <i class="fa-solid fa-calendar-check text-sm"></i>
+                                </div>
+                                <h2 class="font-bold text-slate-800 dark:text-white text-xs sm:text-base">Tugas & Perawatan Hari Ini</h2>
+                            </div>
+                            <span id="task-date" class="text-[10px] sm:text-[11px] font-semibold text-slate-400 dark:text-slate-500"></span>
+                        </div>
+
+                        <!-- Care Checklist List -->
+                        <div id="tasks-list" class="space-y-2.5 max-h-[480px] overflow-y-auto custom-scrollbar pr-0.5">
+                            <!-- Tasks injected via JS -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Mobile Floating Action Button (FAB) -->
+    <button onclick="openAddPlantModal()" class="sm:hidden fixed bottom-5 right-5 w-14 h-14 bg-sage-600 dark:bg-emerald-600 text-white rounded-full shadow-2xl border-2 border-white dark:border-slate-800 flex items-center justify-center text-xl z-40 active:scale-90 transition-transform cursor-pointer" title="Tambah Tanaman Baru">
+        <i class="fa-solid fa-plus"></i>
+    </button>
+
+
+    <!-- Modal 1: Tambah Tanaman Baru -->
+    <div id="add-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-3 sm:p-6">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-xl w-full max-h-[85vh] sm:max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-6 transition-all">
+            
+            <div class="flex justify-between items-center pb-3 border-b border-slate-100 dark:border-slate-800 shrink-0">
+                <h3 class="text-sm sm:text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                    <span>🌱</span> Tambah Tanaman Baru
+                </h3>
+                <button onclick="closeAddPlantModal()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center cursor-pointer">
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
+            </div>
+
+            <form id="add-plant-form" onsubmit="handleAddPlant(event)" class="flex flex-col min-h-0 flex-1 mt-3">
+                <div class="flex-1 overflow-y-auto custom-scrollbar pr-1 space-y-3.5">
+                    <input type="hidden" id="add-mode" value="preset">
+
+                    <!-- Tab Switcher -->
+                    <div class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-2xl">
+                        <button id="tab-preset-btn" type="button" onclick="switchAddTab('preset')" class="flex-1 py-2 text-xs font-bold rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm transition cursor-pointer">
+                            Preset Tanaman
+                        </button>
+                        <button id="tab-custom-btn" type="button" onclick="switchAddTab('custom')" class="flex-1 py-2 text-xs font-bold rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition cursor-pointer">
+                            Input Kustom
+                        </button>
+                    </div>
+
+                    <!-- PRESET SECTION -->
+                    <div id="preset-section" class="space-y-3">
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Pilih Jenis Tanaman *</label>
+                        <select id="preset-select" onchange="applyPresetSelection()" class="w-full px-3.5 py-2.5 text-xs sm:text-sm border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sage-500 focus:outline-none bg-slate-50 dark:bg-slate-800 dark:text-white font-medium">
+                            <!-- Generated via JS -->
+                        </select>
+                        
+                        <div id="preset-preview" class="p-3 bg-sage-50 dark:bg-sage-950/40 rounded-2xl border border-sage-100 dark:border-sage-900/40 flex items-center gap-3">
+                            <span id="preset-icon-preview" class="text-3xl">🌶️</span>
+                            <div>
+                                <h4 id="preset-name-preview" class="text-xs sm:text-sm font-bold text-slate-800 dark:text-white">Cabai Rawit</h4>
+                                <p id="preset-desc-preview" class="text-[11px] text-slate-500 dark:text-slate-400">Estimasi total: 74 hari menuju panen</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CUSTOM SECTION -->
+                    <div id="custom-section" class="hidden space-y-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Nama Tanaman *</label>
+                            <input type="text" id="custom-name" placeholder="Contoh: Buah Naga Merah / Aglaonema" class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sage-500 focus:outline-none dark:text-white">
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Kategori *</label>
+                                <select id="custom-category" class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sage-500 focus:outline-none dark:text-white">
+                                    <option value="sayur">Sayuran 🥬</option>
+                                    <option value="buah">Buah-buahan 🍎</option>
+                                    <option value="herba">Herbal & Rempah 🌿</option>
+                                    <option value="biji">Biji-bijian & Palawija 🌾</option>
+                                    <option value="bunga">Bunga & Hias 🌻</option>
+                                    <option value="lainnya">Lainnya 🪴</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Pilih Ikon Emoji</label>
+                                <select id="custom-icon" class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sage-500 focus:outline-none dark:text-white font-medium">
+                                    <!-- Generated via JS -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TANGGAL & LOKASI -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Tanggal Mulai Tanam *</label>
+                            <input type="date" id="plant-start-date" required onchange="calculateDurationsPreview()" class="w-full px-3 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sage-500 focus:outline-none dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Lokasi Penanaman *</label>
+                            <select id="plant-location" required class="w-full px-3 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sage-500 focus:outline-none dark:text-white">
+                                <option value="Pot / Polybag">Pot / Polybag</option>
+                                <option value="Kebun / Bedengan">Kebun / Bedengan</option>
+                                <option value="Hidroponik">Hidroponik</option>
+                                <option value="Pekarangan Rumah">Pekarangan Rumah</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- ESTIMASI FASE PERTUMBUHAN (4 FASE) -->
+                    <div class="bg-slate-50 dark:bg-slate-800/60 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-3">
+                        <span class="text-xs font-bold text-slate-700 dark:text-slate-200 block">Estimasi Durasi Per Fase (Hari):</span>
+                        
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                            <div>
+                                <label class="block text-[10px] text-slate-500 dark:text-slate-400 font-medium mb-1">🌱 1. Semai</label>
+                                <input type="number" id="dur-penanaman" min="1" required oninput="calculateDurationsPreview()" class="w-full px-2.5 py-1.5 text-xs font-semibold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-center focus:ring-1 focus:ring-sage-500 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-500 dark:text-slate-400 font-medium mb-1">🌿 2. Vegetatif</label>
+                                <input type="number" id="dur-vegetatif" min="1" required oninput="calculateDurationsPreview()" class="w-full px-2.5 py-1.5 text-xs font-semibold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-center focus:ring-1 focus:ring-sage-500 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-500 dark:text-slate-400 font-medium mb-1">🌸 3. Generatif</label>
+                                <input type="number" id="dur-generatif" min="1" required oninput="calculateDurationsPreview()" class="w-full px-2.5 py-1.5 text-xs font-semibold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-center focus:ring-1 focus:ring-sage-500 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-500 dark:text-slate-400 font-medium mb-1">🍇 4. Reproduktif</label>
+                                <input type="number" id="dur-reproduktif" min="1" required oninput="calculateDurationsPreview()" class="w-full px-2.5 py-1.5 text-xs font-semibold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-center focus:ring-1 focus:ring-sage-500 dark:text-white">
+                            </div>
+                        </div>
+                        
+                        <div class="pt-2 flex justify-between items-center text-xs text-slate-600 dark:text-slate-300 border-t border-slate-200/60 dark:border-slate-700">
+                            <span>Total Durasi: <strong id="total-days-preview" class="text-sage-700 dark:text-emerald-400 font-bold">0 Hari</strong></span>
+                            <span>Target Panen: <strong id="target-date-preview" class="text-sage-700 dark:text-emerald-400 font-bold">-</strong></span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Catatan Awal / Varietas / Media Tanam</label>
+                        <textarea id="plant-notes" rows="2" placeholder="Detail media tanam, jenis pupuk dasar, varietas benih..." class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sage-500 focus:outline-none dark:text-white"></textarea>
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-3 mt-2 border-t border-slate-100 dark:border-slate-800 shrink-0">
+                    <button type="button" onclick="closeAddPlantModal()" class="px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl active:scale-95 transition cursor-pointer">Batal</button>
+                    <button type="submit" class="px-5 py-2.5 text-xs sm:text-sm font-bold text-white bg-sage-600 hover:bg-sage-700 dark:bg-emerald-600 dark:hover:bg-emerald-500 rounded-xl shadow active:scale-95 transition cursor-pointer">Simpan Tanaman</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 2: Detail Tanaman & Timeline -->
+    <div id="detail-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-3 sm:p-6">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full max-h-[85vh] sm:max-h-[92vh] flex flex-col shadow-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-6">
+            <div id="detail-content" class="flex flex-col h-full min-h-0">
+                <!-- Injected via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Kamus Ikon & Panduan Masa Tanam -->
+    <div id="legend-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-3 sm:p-6">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full max-h-[85vh] sm:max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-6">
+            <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800 shrink-0">
+                <h3 class="text-xs sm:text-base font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                    <span>📖</span> Kamus Ikon & Panduan Masa Tanam
+                </h3>
+                <button onclick="toggleIconLegendModal()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center cursor-pointer">
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto custom-scrollbar my-3 pr-1 space-y-4 text-xs text-slate-700 dark:text-slate-300">
+                <div>
+                    <h4 class="font-bold text-sage-800 dark:text-emerald-400 uppercase tracking-wider text-[11px] mb-2 flex items-center gap-1.5">
+                        <i class="fa-solid fa-chart-line text-sage-600 dark:text-emerald-400"></i> Keterangan 4 Fase Pertumbuhan Utama
+                    </h4>
+                    <div class="grid grid-cols-1 gap-2">
+                        <div class="p-2.5 bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/50 rounded-2xl flex items-start gap-2.5">
+                            <span class="text-2xl" title="Ikon Semai">🌱</span>
+                            <div>
+                                <span class="font-bold text-blue-900 dark:text-blue-300 block">Fase 1: Semai / Penanaman</span>
+                                <p class="text-[11px] text-blue-700 dark:text-blue-400">Tahap perkecambahan benih, pembentukan tunas awal, atau penyemaian bibit baru.</p>
+                            </div>
+                        </div>
+                        <div class="p-2.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/50 rounded-2xl flex items-start gap-2.5">
+                            <span class="text-2xl" title="Ikon Vegetatif">🌿</span>
+                            <div>
+                                <span class="font-bold text-emerald-900 dark:text-emerald-300 block">Fase 2: Vegetatif (Pertumbuhan)</span>
+                                <p class="text-[11px] text-emerald-700 dark:text-emerald-400">Tahap pertumbuhan aktif organ vegetatif (pembentukan daun, perakaran kuat, dan percabangan batang).</p>
+                            </div>
+                        </div>
+                        <div class="p-2.5 bg-purple-50 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-900/50 rounded-2xl flex items-start gap-2.5">
+                            <span class="text-2xl" title="Ikon Generatif">🌸</span>
+                            <div>
+                                <span class="font-bold text-purple-900 dark:text-purple-300 block">Fase 3: Generatif (Pembungaan)</span>
+                                <p class="text-[11px] text-purple-700 dark:text-purple-400">Tahap permulaan bakal bunga, kuncup mekar, serta proses penyerbukan tanaman.</p>
+                            </div>
+                        </div>
+                        <div class="p-2.5 bg-pink-50 dark:bg-pink-950/40 border border-pink-100 dark:border-pink-900/50 rounded-2xl flex items-start gap-2.5">
+                            <span class="text-2xl" title="Ikon Reproduktif">🍇</span>
+                            <div>
+                                <span class="font-bold text-pink-900 dark:text-pink-300 block">Fase 4: Reproduktif (Pembuahan & Pematangan)</span>
+                                <p class="text-[11px] text-pink-700 dark:text-pink-400">Tahap pembesaran buah, pengisian bulir/umbi, hingga tingkat pematangan sempurna sebelum dipanen.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-sage-800 dark:text-emerald-400 uppercase tracking-wider text-[11px] mb-2 flex items-center gap-1.5">
+                        <i class="fa-solid fa-list-check text-sage-600 dark:text-emerald-400"></i> Ikon Aktivitas Jurnal
+                    </h4>
+                    <div class="grid grid-cols-1 xs:grid-cols-2 gap-2 text-[11px]">
+                        <div class="p-2 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 flex items-center gap-2">
+                            <span>💧</span>
+                            <span class="font-semibold text-slate-700 dark:text-slate-300">Penyiraman Air / Nutrisi</span>
+                        </div>
+                        <div class="p-2 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 flex items-center gap-2">
+                            <span>🧪</span>
+                            <span class="font-semibold text-slate-700 dark:text-slate-300">Pemupukan Organik/Anorganik</span>
+                        </div>
+                        <div class="p-2 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 flex items-center gap-2">
+                            <span>✂️</span>
+                            <span class="font-semibold text-slate-700 dark:text-slate-300">Pemangkasan Daun / Pruning</span>
+                        </div>
+                        <div class="p-2 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 flex items-center gap-2">
+                            <span>🐛</span>
+                            <span class="font-semibold text-slate-700 dark:text-slate-300">Pestisida / Penyiangan Hama</span>
+                        </div>
+                        <div class="p-2 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 flex items-center gap-2">
+                            <span>🪴</span>
+                            <span class="font-semibold text-slate-700 dark:text-slate-300">Pindah Tanam (Repotting)</span>
+                        </div>
+                        <div class="p-2 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 flex items-center gap-2">
+                            <span>📝</span>
+                            <span class="font-semibold text-slate-700 dark:text-slate-300">Catatan Visual Perkembangan</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table Panduan Estimasi Masa Tanam -->
+                <div>
+                    <h4 class="font-bold text-sage-800 dark:text-emerald-400 uppercase tracking-wider text-[11px] mb-2 flex items-center gap-1.5">
+                        <i class="fa-solid fa-table-list text-sage-600 dark:text-emerald-400"></i> Panduan Estimasi Masa Tanam Tanaman Popular
+                    </h4>
+                    <div class="overflow-x-auto custom-scrollbar border border-slate-200 dark:border-slate-700 rounded-2xl">
+                        <table class="w-full text-left text-[11px]">
+                            <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-700">
+                                <tr>
+                                    <th class="p-2">Tanaman</th>
+                                    <th class="p-2 text-center">Semai</th>
+                                    <th class="p-2 text-center">Vegetatif</th>
+                                    <th class="p-2 text-center">Generatif</th>
+                                    <th class="p-2 text-center">Reproduktif</th>
+                                    <th class="p-2 text-right">Total Hari</th>
+                                </tr>
+                            </thead>
+                            <tbody id="legend-presets-body" class="divide-y divide-slate-100 dark:divide-slate-800">
+                                <!-- Injected via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-end shrink-0">
+                <button onclick="toggleIconLegendModal()" class="px-5 py-2 text-xs font-bold text-white bg-sage-600 hover:bg-sage-700 dark:bg-emerald-600 dark:hover:bg-emerald-500 rounded-xl active:scale-95 transition cursor-pointer">
+                    Tutup Kamus
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 4: Tambah Log Jurnal -->
+    <div id="log-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-3 sm:p-6">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full max-h-[85vh] sm:max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-6">
+            <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800 shrink-0">
+                <h3 class="text-xs sm:text-base font-bold text-slate-800 dark:text-white">Catat Jurnal Aktivitas</h3>
+                <button onclick="closeLogModal()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center cursor-pointer">
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
+            </div>
+
+            <form id="log-form" onsubmit="handleSaveLog(event)" class="flex flex-col min-h-0 flex-1 mt-3">
+                <div class="flex-1 overflow-y-auto custom-scrollbar pr-1 space-y-3.5">
+                    <input type="hidden" id="log-plant-id">
+                    
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Jenis Aktivitas *</label>
+                        <select id="log-type" required onchange="toggleHarvestFields()" class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sage-500 focus:outline-none dark:text-white font-medium">
+                            <option value="Penyiraman">💧 Penyiraman Air / Nutrisi</option>
+                            <option value="Pemupukan">🧪 Pemupukan Organik / Anorganik</option>
+                            <option value="Pemangkasan">✂️ Pemangkasan / Pruning</option>
+                            <option value="Penyiangan Hama">🐛 Pestisida / Penyiangan Hama</option>
+                            <option value="Kemunculan Bunga/Buah">🌸 Kemunculan Bunga / Bakal Buah</option>
+                            <option value="Pindah Tanam">🪴 Pindah Tanam (Repotting)</option>
+                            <option value="Panen">🧺 Panen Hasil</option>
+                            <option value="Catatan Lain">📝 Catatan Perkembangan Visual</option>
+                        </select>
+                    </div>
+
+                    <!-- Input Khusus Panen -->
+                    <div id="harvest-fields" class="hidden space-y-2.5 bg-amber-50 dark:bg-amber-950/40 p-3.5 rounded-2xl border border-amber-200 dark:border-amber-900/50">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-bold text-amber-900 dark:text-amber-300 mb-1">Jumlah Hasil Panen</label>
+                                <input type="text" id="harvest-amount" placeholder="misal: 2.5 kg / 15 buah" class="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sage-500 focus:outline-none dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-amber-900 dark:text-amber-300 mb-1">Kualitas Panen</label>
+                                <select id="harvest-quality" class="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sage-500 focus:outline-none dark:text-white">
+                                    <option value="Sangat Baik ⭐️⭐️⭐️">Sangat Baik ⭐️⭐️⭐️</option>
+                                    <option value="Baik ⭐️⭐️">Baik ⭐️⭐️</option>
+                                    <option value="Cukup ⭐️">Cukup ⭐️</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Tanggal & Waktu Aktivitas</label>
+                        <input type="datetime-local" id="log-date" required class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sage-500 focus:outline-none dark:text-white">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">URL Foto Perkembangan (Opsional)</label>
+                        <input type="url" id="log-photo-url" placeholder="https://images.unsplash.com/photo-..." class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sage-500 focus:outline-none dark:text-white">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Catatan / Detail Aktivitas</label>
+                        <textarea id="log-notes" rows="2.5" placeholder="Detail takaran pupuk, kondisi daun, hama yang ditemukan..." class="w-full px-3.5 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-sage-500 focus:outline-none dark:text-white"></textarea>
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-3 mt-2 border-t border-slate-100 dark:border-slate-800 shrink-0">
+                    <button type="button" onclick="closeLogModal()" class="px-4 py-2 text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl active:scale-95 transition cursor-pointer">Batal</button>
+                    <button type="submit" class="px-5 py-2 text-xs sm:text-sm font-bold text-white bg-sage-600 hover:bg-sage-700 dark:bg-emerald-600 dark:hover:bg-emerald-500 rounded-xl shadow active:scale-95 transition cursor-pointer">Simpan Log</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-800 py-4 mt-8 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-400 dark:text-slate-500">
+            TaniTrack &copy; 2026 - Aplikasi Jurnal & Estimasi Penanaman Tanaman
+        </div>
+    </footer>
+
+    <script>
+        // EXPANDED PRESETS CATALOG WITH 4 GROWTH PHASES DURATIONS
+        const PLANT_PRESETS = [
+            // SAYURAN
+            { id: 'cabai_rawit', name: 'Cabai Rawit', category: 'sayur', icon: '🌶️', desc: 'Pedas & produktif', durPenanaman: 14, durVegetatif: 25, durGeneratif: 15, durReproduktif: 20 },
+            { id: 'tomat', name: 'Tomat', category: 'sayur', icon: '🍅', desc: 'Kaya vitamin & segar', durPenanaman: 10, durVegetatif: 20, durGeneratif: 15, durReproduktif: 20 },
+            { id: 'terong', name: 'Terong Ungu', category: 'sayur', icon: '🍆', desc: 'Mudah dirawat & tahan panas', durPenanaman: 14, durVegetatif: 25, durGeneratif: 15, durReproduktif: 20 },
+            { id: 'bawang_merah', name: 'Bawang Merah', category: 'sayur', icon: '🧅', desc: 'Umbi segar dari biji/siung', durPenanaman: 10, durVegetatif: 25, durGeneratif: 15, durReproduktif: 15 },
+            { id: 'bawang_putih', name: 'Bawang Putih', category: 'sayur', icon: '🧄', desc: 'Tanaman bumbu harian', durPenanaman: 14, durVegetatif: 30, durGeneratif: 20, durReproduktif: 25 },
+            { id: 'sawi_pakcoy', name: 'Sawi / Pakcoy', category: 'sayur', icon: '🥬', desc: 'Sayur daun cepat panen', durPenanaman: 7, durVegetatif: 14, durGeneratif: 7, durReproduktif: 7 },
+            { id: 'bayam', name: 'Bayam Hijau', category: 'sayur', icon: '🌱', desc: 'Sangat cepat dipanen', durPenanaman: 5, durVegetatif: 12, durGeneratif: 5, durReproduktif: 6 },
+            { id: 'kangkung', name: 'Kangkung Darat', category: 'sayur', icon: '🌿', desc: 'Panen singkat 25-30 hari', durPenanaman: 5, durVegetatif: 13, durGeneratif: 5, durReproduktif: 5 },
+            { id: 'mentimun', name: 'Mentimun', category: 'sayur', icon: '🥒', desc: 'Sayur rambat berair segar', durPenanaman: 7, durVegetatif: 18, durGeneratif: 10, durReproduktif: 15 },
+            { id: 'brokoli', name: 'Brokoli', category: 'sayur', icon: '🥦', desc: 'Sayur bunga bergizi tinggi', durPenanaman: 14, durVegetatif: 30, durGeneratif: 15, durReproduktif: 20 },
+            { id: 'wortel', name: 'Wortel', category: 'sayur', icon: '🥕', desc: 'Umbi manis kaya vitamin A', durPenanaman: 12, durVegetatif: 35, durGeneratif: 15, durReproduktif: 20 },
+            { id: 'kentang', name: 'Kentang', category: 'sayur', icon: '🥔', desc: 'Umbi batang serbaguna', durPenanaman: 14, durVegetatif: 40, durGeneratif: 20, durReproduktif: 30 },
+
+            // BUAH-BUAHAN
+            { id: 'melon', name: 'Melon', category: 'buah', icon: '🍈', desc: 'Buah manis beraroma harum', durPenanaman: 10, durVegetatif: 25, durGeneratif: 15, durReproduktif: 25 },
+            { id: 'semangka', name: 'Semangka', category: 'buah', icon: '🍉', desc: 'Segar & kaya air', durPenanaman: 10, durVegetatif: 25, durGeneratif: 15, durReproduktif: 25 },
+            { id: 'stroberi', name: 'Stroberi', category: 'buah', icon: '🍓', desc: 'Buah manis asam menyegarkan', durPenanaman: 14, durVegetatif: 30, durGeneratif: 20, durReproduktif: 25 },
+            { id: 'mangga', name: 'Mangga (Tabulampot)', category: 'buah', icon: '🥭', desc: 'Pohon buah tropis', durPenanaman: 30, durVegetatif: 120, durGeneratif: 60, durReproduktif: 90 },
+            { id: 'jeruk', name: 'Jeruk Manis / Nipis', category: 'buah', icon: '🍊', desc: 'Aroma segar & kaya vit C', durPenanaman: 30, durVegetatif: 100, durGeneratif: 50, durReproduktif: 90 },
+            { id: 'pisang', name: 'Pisang', category: 'buah', icon: '🍌', desc: 'Tunas pisang hingga tandan', durPenanaman: 30, durVegetatif: 120, durGeneratif: 60, durReproduktif: 90 },
+            { id: 'alpukat', name: 'Alpukat', category: 'buah', icon: '🥑', desc: 'Buah gurih sehat', durPenanaman: 40, durVegetatif: 150, durGeneratif: 90, durReproduktif: 120 },
+            { id: 'pepaya', name: 'Pepaya California', category: 'buah', icon: '🥭', desc: 'Manis & cepat berbuah', durPenanaman: 20, durVegetatif: 80, durGeneratif: 40, durReproduktif: 70 },
+            { id: 'anggur', name: 'Anggur', category: 'buah', icon: '🍇', desc: 'Tanaman buah merambat', durPenanaman: 20, durVegetatif: 60, durGeneratif: 30, durReproduktif: 60 },
+            { id: 'nanas', name: 'Nanas', category: 'buah', icon: '🍍', desc: 'Buah unik tahan kering', durPenanaman: 30, durVegetatif: 150, durGeneratif: 90, durReproduktif: 90 },
+
+            // HERBAL & REMPAH
+            { id: 'jahe_merah', name: 'Jahe Merah', category: 'herba', icon: '🫚', desc: 'Rimpang obat penghangat', durPenanaman: 20, durVegetatif: 100, durGeneratif: 50, durReproduktif: 70 },
+            { id: 'kunyit', name: 'Kunyit', category: 'herba', icon: '🫚', desc: 'Rimpang pewarna & herbal', durPenanaman: 20, durVegetatif: 100, durGeneratif: 50, durReproduktif: 70 },
+            { id: 'serai', name: 'Serai Dapur', category: 'herba', icon: '🌾', desc: 'Aromatika dapur & teh', durPenanaman: 14, durVegetatif: 40, durGeneratif: 20, durReproduktif: 30 },
+            { id: 'daun_mint', name: 'Daun Mint', category: 'herba', icon: '🌿', desc: 'Herba aromatik menyegarkan', durPenanaman: 10, durVegetatif: 20, durGeneratif: 10, durReproduktif: 15 },
+            { id: 'basil', name: 'Selasih / Basil', category: 'herba', icon: '🌱', desc: 'Daun wangi bumbu masakan', durPenanaman: 10, durVegetatif: 20, durGeneratif: 10, durReproduktif: 20 },
+            { id: 'lidah_buaya', name: 'Lidah Buaya (Aloe)', category: 'herba', icon: '🪴', desc: 'Sukulen kaya gel nutrisi', durPenanaman: 20, durVegetatif: 80, durGeneratif: 40, durReproduktif: 40 },
+
+            // BIJI-BIJIAN & PALAWIJA
+            { id: 'jagung_manis', name: 'Jagung Manis', category: 'biji', icon: '🌽', desc: 'Tongkol manis berkristal', durPenanaman: 10, durVegetatif: 30, durGeneratif: 15, durReproduktif: 20 },
+            { id: 'padi', name: 'Padi Sawah / Gogo', category: 'biji', icon: '🌾', desc: 'Biji pangan pokok', durPenanaman: 20, durVegetatif: 40, durGeneratif: 20, durReproduktif: 35 },
+            { id: 'kedelai', name: 'Kedelai', category: 'biji', icon: '🫘', desc: 'Polong kaya protein', durPenanaman: 10, durVegetatif: 30, durGeneratif: 15, durReproduktif: 30 },
+            { id: 'kacang_tanah', name: 'Kacang Tanah', category: 'biji', icon: '🥜', desc: 'Polong dalam tanah', durPenanaman: 10, durVegetatif: 35, durGeneratif: 15, durReproduktif: 35 },
+
+            // BUNGA & TANAMAN HIAS
+            { id: 'anggrek', name: 'Bunga Anggrek', category: 'bunga', icon: '🌺', desc: 'Bunga hias eksotis', durPenanaman: 30, durVegetatif: 80, durGeneratif: 40, durReproduktif: 60 },
+            { id: 'mawar', name: 'Mawar', category: 'bunga', icon: '🌹', desc: 'Bunga harum & indah', durPenanaman: 14, durVegetatif: 30, durGeneratif: 15, durReproduktif: 30 },
+            { id: 'melati', name: 'Melati Putih', category: 'bunga', icon: '🌼', desc: 'Wangi khas nusantara', durPenanaman: 14, durVegetatif: 35, durGeneratif: 15, durReproduktif: 30 },
+            { id: 'matahari', name: 'Bunga Matahari', category: 'bunga', icon: '🌻', desc: 'Bunga besar cerah', durPenanaman: 10, durVegetatif: 30, durGeneratif: 15, durReproduktif: 25 }
+        ];
+
+        // EMOJI ICON SELECTION COLLECTION
+        const ICON_COLLECTION = [
+            { icon: '🌱', label: '🌱 Tunas / Kecambah (Semai)' },
+            { icon: '🌿', label: '🌿 Daun / Herba / Tanaman Hijau' },
+            { icon: '🥬', label: '🥬 Sayuran Daun (Sawi/Pakcoy/Bayam)' },
+            { icon: '🌶️', label: '🌶️ Cabai / Bumbu Pedas' },
+            { icon: '🍅', label: '🍅 Tomat' },
+            { icon: '🍆', label: '🍆 Terong Ungu' },
+            { icon: '🥒', label: '🥒 Mentimun' },
+            { icon: '🌽', label: '🌽 Jagung Manis' },
+            { icon: '🥦', label: '🥦 Brokoli / Kubis' },
+            { icon: '🥕', label: '🥕 Wortel' },
+            { icon: '🥔', label: '🥔 Kentang' },
+            { icon: '🧅', label: '🧅 Bawang Merah' },
+            { icon: '🧄', label: '🧄 Bawang Putih' },
+            { icon: '🫘', label: '🫘 Kacang-kacangan / Kedelai' },
+            { icon: '🥜', label: '🥜 Kacang Tanah' },
+            { icon: '🌾', label: '🌾 Padi / Serai / Palawija' },
+            { icon: '🍈', label: '🍈 Melon' },
+            { icon: '🍉', label: '🍉 Semangka' },
+            { icon: '🍓', label: '🍓 Stroberi' },
+            { icon: '🥭', label: '🥭 Mangga / Pepaya' },
+            { icon: '🍊', label: '🍊 Jeruk Manis / Nipis' },
+            { icon: '🍌', label: '🍌 Pisang' },
+            { icon: '🥑', label: '🥑 Alpukat' },
+            { icon: '🍇', label: '🍇 Anggur' },
+            { icon: '🍍', label: '🍍 Nanas' },
+            { icon: '🫚', label: '🫚 Jahe / Kunyit / Rimpang' },
+            { icon: '🌻', label: '🌻 Bunga Matahari' },
+            { icon: '🌹', label: '🌹 Bunga Mawar' },
+            { icon: '🌺', label: '🌺 Bunga Anggrek' },
+            { icon: '🌸', label: '🌸 Bunga Mekar' },
+            { icon: '🪴', label: '🪴 Tanaman Pot / Hias Indoor' }
+        ];
+
+        let plants = [];
+
+        function initDarkMode() {
+            const savedTheme = localStorage.getItem('taniTrack_theme');
+            const icon = document.getElementById('theme-icon');
+            
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                if (icon) icon.className = 'fa-solid fa-sun text-amber-300 text-sm sm:text-base';
+            } else {
+                document.documentElement.classList.remove('dark');
+                if (icon) icon.className = 'fa-solid fa-moon text-amber-300 text-sm sm:text-base';
+            }
+        }
+
+        function toggleDarkMode() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('taniTrack_theme', isDark ? 'dark' : 'light');
+            
+            const icon = document.getElementById('theme-icon');
+            if (isDark) {
+                icon.className = 'fa-solid fa-sun text-amber-300 text-sm sm:text-base';
+            } else {
+                icon.className = 'fa-solid fa-moon text-amber-300 text-sm sm:text-base';
+            }
+        }
+
+        function loadData() {
+            const stored = localStorage.getItem('taniTrack_plants');
+            if (stored) {
+                try {
+                    plants = JSON.parse(stored);
+                } catch (e) {
+                    plants = [];
+                }
+            } else {
+                // Initial sample plants
+                plants = [
+                    {
+                        id: 'plant_1',
+                        name: 'Cabai Rawit Red',
+                        category: 'sayur',
+                        icon: '🌶️',
+                        location: 'Pot / Polybag',
+                        plantDate: getPastDateString(25),
+                        durPenanaman: 14,
+                        durVegetatif: 25,
+                        durGeneratif: 15,
+                        durReproduktif: 20,
+                        notes: 'Benih unggul & pupuk kandang',
+                        logs: [
+                            { id: 'log_1', type: 'Penyiraman', date: getPastDateTimeString(1), notes: 'Penyiraman rutin pagi hari' },
+                            { id: 'log_2', type: 'Pemupukan', date: getPastDateTimeString(10), notes: 'Pemberian pupuk NPK 5 gram' }
+                        ]
+                    },
+                    {
+                        id: 'plant_2',
+                        name: 'Sawi Pakcoy Hijau',
+                        category: 'sayur',
+                        icon: '🥬',
+                        location: 'Hidroponik',
+                        plantDate: getPastDateString(30),
+                        durPenanaman: 7,
+                        durVegetatif: 14,
+                        durGeneratif: 7,
+                        durReproduktif: 7,
+                        notes: 'Hidroponik sistem Wick',
+                        logs: [
+                            { id: 'log_3', type: 'Penyiraman', date: getPastDateTimeString(2), notes: 'Cek kepekatan nutrisi AB Mix' }
+                        ]
+                    }
+                ];
+                saveData();
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('taniTrack_plants', JSON.stringify(plants));
+        }
+
+        window.onload = function() {
+            initDarkMode();
+            loadData();
+            populatePresetsDropdown();
+            populateIconsDropdown();
+            renderLegendPresetsTable();
+            
+            document.getElementById('plant-start-date').value = getTodayString();
+            document.getElementById('task-date').textContent = formatDate(getTodayString());
+            calculateDurationsPreview();
+            
+            renderDashboard();
+            renderPlants();
+            renderTasks();
+        };
+
+        function openAddPlantModal() {
+            document.getElementById('add-plant-form').reset();
+            document.getElementById('plant-start-date').value = getTodayString();
+            switchAddTab('preset');
+            applyPresetSelection();
+            document.getElementById('add-modal').classList.remove('hidden');
+        }
+
+        function closeAddPlantModal() {
+            document.getElementById('add-modal').classList.add('hidden');
+        }
+
+        function switchAddTab(mode) {
+            document.getElementById('add-mode').value = mode;
+            const presetBtn = document.getElementById('tab-preset-btn');
+            const customBtn = document.getElementById('tab-custom-btn');
+            const presetSec = document.getElementById('preset-section');
+            const customSec = document.getElementById('custom-section');
+
+            if (mode === 'preset') {
+                presetBtn.className = "flex-1 py-2 text-xs font-bold rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm transition cursor-pointer";
+                customBtn.className = "flex-1 py-2 text-xs font-bold rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition cursor-pointer";
+                presetSec.classList.remove('hidden');
+                customSec.classList.add('hidden');
+                applyPresetSelection();
+            } else {
+                customBtn.className = "flex-1 py-2 text-xs font-bold rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm transition cursor-pointer";
+                presetBtn.className = "flex-1 py-2 text-xs font-bold rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition cursor-pointer";
+                customSec.classList.remove('hidden');
+                presetSec.classList.add('hidden');
+                calculateDurationsPreview();
+            }
+        }
+
+        function populatePresetsDropdown() {
+            const select = document.getElementById('preset-select');
+            select.innerHTML = PLANT_PRESETS.map(p => {
+                const total = p.durPenanaman + p.durVegetatif + p.durGeneratif + p.durReproduktif;
+                return `<option value="${p.id}">${p.icon} ${p.name} — Total ${total} Hari (${p.desc})</option>`;
+            }).join('');
+        }
+
+        function populateIconsDropdown() {
+            const select = document.getElementById('custom-icon');
+            select.innerHTML = ICON_COLLECTION.map(item => `
+                <option value="${item.icon}">${item.label}</option>
+            `).join('');
+        }
+
+        function renderLegendPresetsTable() {
+            const tbody = document.getElementById('legend-presets-body');
+            tbody.innerHTML = PLANT_PRESETS.map(p => {
+                const total = p.durPenanaman + p.durVegetatif + p.durGeneratif + p.durReproduktif;
+                return `
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                        <td class="p-2 font-semibold text-slate-800 dark:text-slate-200">${p.icon} ${p.name}</td>
+                        <td class="p-2 text-center text-blue-600 dark:text-blue-400">${p.durPenanaman}d</td>
+                        <td class="p-2 text-center text-emerald-600 dark:text-emerald-400">${p.durVegetatif}d</td>
+                        <td class="p-2 text-center text-purple-600 dark:text-purple-400">${p.durGeneratif}d</td>
+                        <td class="p-2 text-center text-pink-600 dark:text-pink-400">${p.durReproduktif}d</td>
+                        <td class="p-2 text-right font-bold text-sage-700 dark:text-emerald-400">${total} Hari</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function toggleIconLegendModal() {
+            const modal = document.getElementById('legend-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        function applyPresetSelection() {
+            const presetId = document.getElementById('preset-select').value;
+            const preset = PLANT_PRESETS.find(p => p.id === presetId);
+            if (!preset) return;
+
+            document.getElementById('preset-icon-preview').textContent = preset.icon;
+            document.getElementById('preset-name-preview').textContent = preset.name;
+            const total = preset.durPenanaman + preset.durVegetatif + preset.durGeneratif + preset.durReproduktif;
+            document.getElementById('preset-desc-preview').textContent = `Estimasi total: ${total} hari menuju panen`;
+
+            document.getElementById('dur-penanaman').value = preset.durPenanaman;
+            document.getElementById('dur-vegetatif').value = preset.durVegetatif;
+            document.getElementById('dur-generatif').value = preset.durGeneratif;
+            document.getElementById('dur-reproduktif').value = preset.durReproduktif;
+
+            calculateDurationsPreview();
+        }
+
+        function calculateDurationsPreview() {
+            const p = parseInt(document.getElementById('dur-penanaman').value) || 0;
+            const v = parseInt(document.getElementById('dur-vegetatif').value) || 0;
+            const g = parseInt(document.getElementById('dur-generatif').value) || 0;
+            const r = parseInt(document.getElementById('dur-reproduktif').value) || 0;
+            const total = p + v + g + r;
+
+            document.getElementById('total-days-preview').textContent = total + ' Hari';
+
+            const startDateVal = document.getElementById('plant-start-date').value;
+            if (startDateVal) {
+                const target = new Date(startDateVal);
+                target.setDate(target.getDate() + total);
+                document.getElementById('target-date-preview').textContent = formatDate(target.toISOString().split('T')[0]);
+            } else {
+                document.getElementById('target-date-preview').textContent = '-';
+            }
+        }
+
+        function handleAddPlant(e) {
+            e.preventDefault();
+            const mode = document.getElementById('add-mode').value;
+            let name, category, icon;
+
+            const durP = parseInt(document.getElementById('dur-penanaman').value) || 7;
+            const durV = parseInt(document.getElementById('dur-vegetatif').value) || 25;
+            const durG = parseInt(document.getElementById('dur-generatif').value) || 15;
+            const durR = parseInt(document.getElementById('dur-reproduktif').value) || 20;
+
+            if (mode === 'preset') {
+                const presetId = document.getElementById('preset-select').value;
+                const preset = PLANT_PRESETS.find(p => p.id === presetId);
+                name = preset ? preset.name : 'Tanaman Baru';
+                category = preset ? preset.category : 'sayur';
+                icon = preset ? preset.icon : '🌱';
+            } else {
+                name = document.getElementById('custom-name').value.trim() || 'Tanaman Kustom';
+                category = document.getElementById('custom-category').value;
+                icon = document.getElementById('custom-icon').value;
+            }
+
+            const newPlant = {
+                id: 'plant_' + Date.now(),
+                name,
+                category,
+                icon,
+                location: document.getElementById('plant-location').value,
+                plantDate: document.getElementById('plant-start-date').value,
+                durPenanaman: durP,
+                durVegetatif: durV,
+                durGeneratif: durG,
+                durReproduktif: durR,
+                notes: document.getElementById('plant-notes').value.trim(),
+                logs: [
+                    {
+                        id: 'log_' + Date.now(),
+                        type: 'Penanaman',
+                        date: new Date().toISOString().slice(0,16),
+                        notes: 'Awal penanaman dicatat di TaniTrack.'
+                    }
+                ]
+            };
+
+            plants.unshift(newPlant);
+            saveData();
+            closeAddPlantModal();
+            renderDashboard();
+            renderPlants();
+            renderTasks();
+        }
+
+        function calculatePlantProgress(plant) {
+            const start = new Date(plant.plantDate);
+            const today = new Date();
+            
+            const diffTime = today - start;
+            const daysElapsed = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
+
+            const durP = plant.durPenanaman || 7;
+            const durV = plant.durVegetatif || plant.durPerawatan || 25;
+            const durG = plant.durGeneratif || Math.round((plant.durPembuahan || 20) * 0.5);
+            const durR = plant.durReproduktif || Math.round((plant.durPembuahan || 20) * 0.5);
+
+            const totalDays = durP + durV + durG + durR;
+            const daysRemaining = totalDays - daysElapsed;
+            const percent = Math.min(100, Math.round((daysElapsed / totalDays) * 100));
+
+            const datePenanamanEnd = new Date(start);
+            datePenanamanEnd.setDate(datePenanamanEnd.getDate() + durP);
+
+            const dateVegetatifEnd = new Date(datePenanamanEnd);
+            dateVegetatifEnd.setDate(dateVegetatifEnd.getDate() + durV);
+
+            const dateGeneratifEnd = new Date(dateVegetatifEnd);
+            dateGeneratifEnd.setDate(dateGeneratifEnd.getDate() + durG);
+
+            const dateHarvest = new Date(dateGeneratifEnd);
+            dateHarvest.setDate(dateHarvest.getDate() + durR);
+
+            let phase = '🌱 Semai / Penanaman';
+            let phaseCode = 'penanaman'; 
+            let phaseIcon = '🌱';
+
+            if (plant.statusOverride === 'completed') {
+                phase = '✅ Selesai Panen';
+                phaseCode = 'completed';
+                phaseIcon = '✅';
+            } else if (daysElapsed >= totalDays) {
+                phase = '🎉 Siap Panen!';
+                phaseCode = 'panen_ready';
+                phaseIcon = '🧺';
+            } else if (daysElapsed >= (durP + durV + durG)) {
+                phase = '🍇 Reproduktif (Pembuahan)';
+                phaseCode = 'reproduktif';
+                phaseIcon = '🍇';
+            } else if (daysElapsed >= (durP + durV)) {
+                phase = '🌸 Generatif (Pembungaan)';
+                phaseCode = 'generatif';
+                phaseIcon = '🌸';
+            } else if (daysElapsed >= durP) {
+                phase = '🌿 Vegetatif (Pertumbuhan)';
+                phaseCode = 'vegetatif';
+                phaseIcon = '🌿';
+            }
+
+            return {
+                daysElapsed,
+                totalDays,
+                daysRemaining,
+                percent,
+                phase,
+                phaseCode,
+                phaseIcon,
+                durations: { durP, durV, durG, durR },
+                targetHarvestDate: dateHarvest.toISOString().split('T')[0],
+                dates: {
+                    start: plant.plantDate,
+                    penanamanEnd: datePenanamanEnd.toISOString().split('T')[0],
+                    vegetatifEnd: dateVegetatifEnd.toISOString().split('T')[0],
+                    generatifEnd: dateGeneratifEnd.toISOString().split('T')[0],
+                    harvest: dateHarvest.toISOString().split('T')[0]
+                }
+            };
+        }
+
+        function renderDashboard() {
+            let total = plants.length;
+            let growing = 0;
+            let ready = 0;
+            let finished = 0;
+
+            let countSemai = 0;
+            let countVegetatif = 0;
+            let countGeneratif = 0;
+            let countReproduktif = 0;
+
+            plants.forEach(p => {
+                const prog = calculatePlantProgress(p);
+                if (prog.phaseCode === 'completed') {
+                    finished++;
+                } else if (prog.phaseCode === 'panen_ready') {
+                    ready++;
+                } else {
+                    growing++;
+                    if (prog.phaseCode === 'penanaman') countSemai++;
+                    else if (prog.phaseCode === 'vegetatif') countVegetatif++;
+                    else if (prog.phaseCode === 'generatif') countGeneratif++;
+                    else if (prog.phaseCode === 'reproduktif') countReproduktif++;
+                }
+            });
+
+            document.getElementById('stat-total').textContent = total;
+            document.getElementById('stat-growing').textContent = growing;
+            document.getElementById('stat-ready').textContent = ready;
+            document.getElementById('stat-finished').textContent = finished;
+
+            if (document.getElementById('stat-semai')) document.getElementById('stat-semai').textContent = countSemai;
+            if (document.getElementById('stat-vegetatif')) document.getElementById('stat-vegetatif').textContent = countVegetatif;
+            if (document.getElementById('stat-generatif')) document.getElementById('stat-generatif').textContent = countGeneratif;
+            if (document.getElementById('stat-reproduktif')) document.getElementById('stat-reproduktif').textContent = countReproduktif;
+        }
+
+        function renderPlants() {
+            const grid = document.getElementById('plants-grid');
+            const emptyState = document.getElementById('empty-state');
+            const search = document.getElementById('search-input').value.toLowerCase();
+            const catFilter = document.getElementById('filter-category').value;
+            const statusFilter = document.getElementById('filter-status').value;
+
+            let filtered = plants.filter(p => {
+                const matchesSearch = p.name.toLowerCase().includes(search);
+                const matchesCat = catFilter === 'all' || p.category === catFilter;
+                
+                const prog = calculatePlantProgress(p);
+                let matchesStatus = true;
+                if (statusFilter === 'active') matchesStatus = prog.phaseCode !== 'completed' && prog.phaseCode !== 'panen_ready';
+                else if (statusFilter === 'ready') matchesStatus = prog.phaseCode === 'panen_ready';
+                else if (statusFilter === 'completed') matchesStatus = prog.phaseCode === 'completed';
+                else if (statusFilter !== 'all') matchesStatus = prog.phaseCode === statusFilter;
+
+                return matchesSearch && matchesCat && matchesStatus;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            grid.innerHTML = filtered.map(plant => {
+                const prog = calculatePlantProgress(plant);
+                return `
+                    <div class="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-3xl shadow-sm border border-slate-200/80 dark:border-slate-800 hover:shadow-md transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex flex-col xs:flex-row justify-between items-start mb-3 gap-2">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-11 h-11 sm:w-12 sm:h-12 bg-sage-50 dark:bg-slate-800 rounded-2xl flex items-center justify-center text-2xl border border-sage-100 dark:border-slate-700 shadow-inner shrink-0" title="Tanaman: ${plant.name}">
+                                        ${plant.icon}
+                                    </div>
+                                    <div class="min-w-0">
+                                        <h3 class="font-bold text-slate-800 dark:text-white text-sm sm:text-base leading-tight truncate">${plant.name}</h3>
+                                        <p class="text-[11px] text-slate-400 capitalize">${plant.location}</p>
+                                    </div>
+                                </div>
+                                <div class="mt-1 xs:mt-0">
+                                    ${getPhaseBadgeHtml(prog.phaseCode, prog.phase)}
+                                </div>
+                            </div>
+
+                            <div class="space-y-1 my-3">
+                                <div class="flex justify-between text-xs font-semibold">
+                                    <span class="text-slate-500 dark:text-slate-400">Progress</span>
+                                    <span class="text-sage-700 dark:text-emerald-400">${prog.percent}%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                                    <div class="bg-sage-600 dark:bg-emerald-500 h-full rounded-full transition-all duration-300" style="width: ${prog.percent}%"></div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2 py-2 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">
+                                <div>
+                                    <span class="block text-[10px] text-slate-400">Tanam</span>
+                                    <strong class="text-slate-700 dark:text-slate-200 font-semibold">${formatDate(plant.plantDate)}</strong>
+                                </div>
+                                <div>
+                                    <span class="block text-[10px] text-slate-400">Target Panen</span>
+                                    <strong class="text-slate-700 dark:text-slate-200 font-semibold">${formatDate(prog.targetHarvestDate)}</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-3 mt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+                            <button onclick="openDetailModal('${plant.id}')" class="py-2 px-1 text-xs text-sage-700 dark:text-emerald-400 font-bold hover:underline active:scale-95 transition cursor-pointer">
+                                Detail & Timeline &rarr;
+                            </button>
+                            <button onclick="openLogModal('${plant.id}')" class="px-3 py-2 bg-sage-50 dark:bg-slate-800 hover:bg-sage-100 dark:hover:bg-slate-700 text-sage-700 dark:text-emerald-400 rounded-xl text-xs font-bold transition border border-sage-200/80 dark:border-slate-700 active:scale-95 cursor-pointer">
+                                + Log Jurnal
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderTasks() {
+            const list = document.getElementById('tasks-list');
+            const activePlants = plants.filter(p => p.statusOverride !== 'completed');
+
+            if (activePlants.length === 0) {
+                list.innerHTML = `
+                    <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl text-center text-xs text-slate-400 dark:text-slate-500">
+                        Tidak ada tugas perawatan hari ini.
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = activePlants.map(p => {
+                const prog = calculatePlantProgress(p);
+                const lastWatered = p.logs.find(l => l.type === 'Penyiraman');
+                const wateredToday = lastWatered && lastWatered.date.startsWith(getTodayString());
+
+                return `
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+                        <div class="flex items-center space-x-3 min-w-0">
+                            <button onclick="quickWater('${p.id}')" class="w-11 h-11 sm:w-10 sm:h-10 rounded-2xl flex items-center justify-center shrink-0 active:scale-90 transition cursor-pointer ${wateredToday ? 'bg-blue-500 text-white shadow-sm' : 'bg-white dark:bg-slate-700 text-blue-500 border border-blue-200 dark:border-slate-600 hover:bg-blue-50'}" title="Siram Hari Ini">
+                                <i class="fa-solid fa-droplet text-sm sm:text-xs"></i>
+                            </button>
+                            <div class="min-w-0">
+                                <h4 class="text-xs font-bold text-slate-800 dark:text-white truncate">${p.name}</h4>
+                                <p class="text-[10px] text-slate-400 dark:text-slate-500 truncate">${prog.phase} &bull; ${wateredToday ? 'Sudah Disiram Hari Ini' : 'Perlu Penyiraman'}</p>
+                            </div>
+                        </div>
+                        <button onclick="openLogModal('${p.id}')" class="w-9 h-9 rounded-xl bg-white dark:bg-slate-700/80 text-slate-400 hover:text-sage-600 dark:hover:text-emerald-400 flex items-center justify-center shrink-0 active:scale-90 transition border border-slate-200/60 dark:border-slate-600 cursor-pointer" title="Tambah Catatan">
+                            <i class="fa-solid fa-plus text-xs"></i>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function quickWater(plantId) {
+            const plant = plants.find(p => p.id === plantId);
+            if (!plant) return;
+
+            plant.logs.unshift({
+                id: 'log_' + Date.now(),
+                type: 'Penyiraman',
+                date: new Date().toISOString().slice(0,16),
+                notes: 'Penyiraman cepat harian.'
+            });
+
+            saveData();
+            renderPlants();
+            renderTasks();
+        }
+
+        function openDetailModal(id) {
+            const plant = plants.find(p => p.id === id);
+            if (!plant) return;
+
+            const container = document.getElementById('detail-content');
+            const prog = calculatePlantProgress(plant);
+
+            let logsHtml = '';
+            if (plant.logs && plant.logs.length > 0) {
+                logsHtml = plant.logs.map(log => `
+                    <div class="relative pl-6 pb-4 border-l-2 border-sage-200 dark:border-slate-700 last:border-l-0">
+                        <div class="absolute -left-[7px] top-0 w-3 h-3 bg-sage-500 dark:bg-emerald-500 rounded-full border-2 border-white dark:border-slate-900"></div>
+                        <div class="flex justify-between items-start">
+                            <span class="text-xs font-bold text-slate-800 dark:text-slate-200 bg-sage-50 dark:bg-slate-800 px-2 py-0.5 rounded-md border border-sage-100 dark:border-slate-700">${log.type}</span>
+                            <span class="text-[11px] text-slate-400">${formatDateTime(log.date)}</span>
+                        </div>
+                        ${log.harvestAmount ? `<p class="text-xs font-bold text-amber-800 dark:text-amber-300 mt-1">Hasil Panen: ${log.harvestAmount} (${log.harvestQuality || ''})</p>` : ''}
+                        ${log.photoUrl ? `<div class="mt-2"><img src="${log.photoUrl}" alt="Foto Perkembangan" class="w-full max-h-48 object-cover rounded-2xl border border-slate-200 dark:border-slate-700" onerror="this.style.display='none'"></div>` : ''}
+                        <p class="text-xs text-slate-600 dark:text-slate-300 mt-1">${log.notes || '-'}</p>
+                    </div>
+                `).join('');
+            } else {
+                logsHtml = `<p class="text-xs text-slate-400 py-2">Belum ada jurnal/log catatan.</p>`;
+            }
+
+            container.innerHTML = `
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 sm:w-14 sm:h-14 bg-sage-50 dark:bg-slate-800 rounded-2xl flex items-center justify-center text-3xl shadow-inner border border-sage-100 dark:border-slate-700">
+                            ${plant.icon}
+                        </div>
+                        <div>
+                            <h2 class="text-lg sm:text-xl font-bold text-slate-800 dark:text-white">${plant.name}</h2>
+                            <p class="text-xs text-slate-400 capitalize">${plant.category} &bull; ${plant.location}</p>
+                        </div>
+                    </div>
+                    <button onclick="closeDetailModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 cursor-pointer">
+                        <i class="fa-solid fa-xmark text-xl"></i>
+                    </button>
+                </div>
+
+                <div class="bg-sage-50 dark:bg-slate-800/80 p-4 rounded-2xl border border-sage-100 dark:border-slate-700 mb-5">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-bold text-sage-900 dark:text-emerald-400">Progress Pertumbuhan</span>
+                        <span class="text-xs font-extrabold text-sage-700 dark:text-emerald-300">${prog.percent}% (${prog.daysElapsed} / ${prog.totalDays} Hari)</span>
+                    </div>
+                    <div class="w-full bg-slate-200 dark:bg-slate-700 h-3 rounded-full overflow-hidden mb-3">
+                        <div class="bg-sage-600 dark:bg-emerald-500 h-full rounded-full transition-all duration-500" style="width: ${prog.percent}%"></div>
+                    </div>
+                    <div class="flex justify-between items-center text-xs text-slate-600 dark:text-slate-300">
+                        <span>Fase Saat Ini: <strong class="text-slate-800 dark:text-white">${prog.phase}</strong></span>
+                        <span>Target Panen: <strong class="text-slate-800 dark:text-white">${formatDate(prog.targetHarvestDate)}</strong></span>
+                    </div>
+                </div>
+
+                <div class="space-y-3 mb-6">
+                    <h4 class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Jadwal Target 4 Fase Growth</h4>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
+                        <div class="p-2.5 rounded-2xl border ${prog.phaseCode === 'penanaman' ? 'bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800 text-blue-900 dark:text-blue-300 ring-2 ring-blue-400' : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400'}">
+                            <span class="block font-bold mb-0.5">🌱 1. Semai</span>
+                            <span class="text-[10px] block opacity-80">${prog.durations.durP} Hari</span>
+                            <span class="text-[10px] font-semibold block mt-1">${formatDate(prog.dates.start)}</span>
+                        </div>
+                        <div class="p-2.5 rounded-2xl border ${prog.phaseCode === 'vegetatif' ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-300 ring-2 ring-emerald-400' : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400'}">
+                            <span class="block font-bold mb-0.5">🌿 2. Vegetatif</span>
+                            <span class="text-[10px] block opacity-80">${prog.durations.durV} Hari</span>
+                            <span class="text-[10px] font-semibold block mt-1">${formatDate(prog.dates.penanamanEnd)}</span>
+                        </div>
+                        <div class="p-2.5 rounded-2xl border ${prog.phaseCode === 'generatif' ? 'bg-purple-50 dark:bg-purple-950/40 border-purple-200 dark:border-purple-800 text-purple-900 dark:text-purple-300 ring-2 ring-purple-400' : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400'}">
+                            <span class="block font-bold mb-0.5">🌸 3. Generatif</span>
+                            <span class="text-[10px] block opacity-80">${prog.durations.durG} Hari</span>
+                            <span class="text-[10px] font-semibold block mt-1">${formatDate(prog.dates.vegetatifEnd)}</span>
+                        </div>
+                        <div class="p-2.5 rounded-2xl border ${prog.phaseCode === 'reproduktif' ? 'bg-pink-50 dark:bg-pink-950/40 border-pink-200 dark:border-pink-800 text-pink-900 dark:text-pink-300 ring-2 ring-pink-400' : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400'}">
+                            <span class="block font-bold mb-0.5">🍇 4. Reproduktif</span>
+                            <span class="text-[10px] block opacity-80">${prog.durations.durR} Hari</span>
+                            <span class="text-[10px] font-semibold block mt-1">${formatDate(prog.dates.generatifEnd)}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-1.5">
+                            <i class="fa-solid fa-clock-rotate-left text-sage-600 dark:text-emerald-400"></i> Riwayat Jurnal
+                        </h4>
+                        <button onclick="closeDetailModal(); openLogModal('${plant.id}')" class="text-xs text-sage-700 dark:text-emerald-400 hover:underline font-bold cursor-pointer">
+                            + Tambah Log
+                        </button>
+                    </div>
+
+                    <div class="mt-2 space-y-1 max-h-60 overflow-y-auto custom-scrollbar pr-1">
+                        ${logsHtml}
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center pt-4 mt-6 border-t border-slate-100 dark:border-slate-800">
+                    <button onclick="deletePlant('${plant.id}')" class="text-xs text-rose-500 hover:text-rose-700 font-bold cursor-pointer">
+                        <i class="fa-solid fa-trash mr-1"></i> Hapus
+                    </button>
+                    <div class="flex gap-2">
+                        ${plant.statusOverride !== 'completed' ? `
+                            <button onclick="markPlantCompleted('${plant.id}')" class="px-3 py-1.5 bg-amber-500 text-white text-xs font-bold rounded-xl hover:bg-amber-600 transition cursor-pointer">
+                                <i class="fa-solid fa-check mr-1"></i> Selesai Panen
+                            </button>
+                        ` : ''}
+                        <button onclick="closeDetailModal()" class="px-4 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer">
+                            Tutup
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('detail-modal').classList.remove('hidden');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detail-modal').classList.add('hidden');
+        }
+
+        function openLogModal(plantId) {
+            document.getElementById('log-plant-id').value = plantId;
+            document.getElementById('log-form').reset();
+            
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('log-date').value = now.toISOString().slice(0,16);
+
+            toggleHarvestFields();
+            document.getElementById('log-modal').classList.remove('hidden');
+        }
+
+        function closeLogModal() {
+            document.getElementById('log-modal').classList.add('hidden');
+        }
+
+        function toggleHarvestFields() {
+            const type = document.getElementById('log-type').value;
+            const fields = document.getElementById('harvest-fields');
+            if (type === 'Panen') {
+                fields.classList.remove('hidden');
+            } else {
+                fields.classList.add('hidden');
+            }
+        }
+
+        function handleSaveLog(e) {
+            e.preventDefault();
+            const plantId = document.getElementById('log-plant-id').value;
+            const type = document.getElementById('log-type').value;
+            const date = document.getElementById('log-date').value;
+            const notes = document.getElementById('log-notes').value;
+            const photoUrl = document.getElementById('log-photo-url').value;
+
+            const plant = plants.find(p => p.id === plantId);
+            if (!plant) return;
+
+            const logEntry = {
+                id: 'log_' + Date.now(),
+                type,
+                date,
+                notes,
+                photoUrl: photoUrl || null
+            };
+
+            if (type === 'Panen') {
+                logEntry.harvestAmount = document.getElementById('harvest-amount').value;
+                logEntry.harvestQuality = document.getElementById('harvest-quality').value;
+            }
+
+            plant.logs.unshift(logEntry);
+            saveData();
+            closeLogModal();
+            renderDashboard();
+            renderPlants();
+            renderTasks();
+        }
+
+        function markPlantCompleted(id) {
+            const plant = plants.find(p => p.id === id);
+            if (!plant) return;
+
+            plant.statusOverride = 'completed';
+            plant.logs.unshift({
+                id: 'log_' + Date.now(),
+                type: 'Panen',
+                date: new Date().toISOString().slice(0,16),
+                notes: 'Tanaman telah ditandai selesai dipanen.'
+            });
+
+            saveData();
+            closeDetailModal();
+            renderDashboard();
+            renderPlants();
+            renderTasks();
+        }
+
+        function deletePlant(id) {
+            plants = plants.filter(p => p.id !== id);
+            saveData();
+            closeDetailModal();
+            renderDashboard();
+            renderPlants();
+            renderTasks();
+        }
+
+        function getTodayString() {
+            return new Date().toISOString().split('T')[0];
+        }
+
+        function getPastDateString(daysAgo) {
+            const d = new Date();
+            d.setDate(d.getDate() - daysAgo);
+            return d.toISOString().split('T')[0];
+        }
+
+        function getPastDateTimeString(daysAgo) {
+            const d = new Date();
+            d.setDate(d.getDate() - daysAgo);
+            return d.toISOString().slice(0, 16);
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const options = { day: 'numeric', month: 'short', year: 'numeric' };
+            return new Date(dateStr).toLocaleDateString('id-ID', options);
+        }
+
+        function formatDateTime(dateTimeStr) {
+            if (!dateTimeStr) return '-';
+            const date = new Date(dateTimeStr);
+            return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) + ' ' + 
+                   date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function getPhaseBadgeHtml(code, label) {
+            let colorClasses = 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700';
+            let titleDesc = 'Fase Tanaman';
+
+            if (code === 'penanaman') { 
+                colorClasses = 'bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800'; 
+                titleDesc = 'Fase 1: Semai & Perkecambahan Benih Awal'; 
+            }
+            else if (code === 'vegetatif') { 
+                colorClasses = 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'; 
+                titleDesc = 'Fase 2: Pertumbuhan Vegetatif Daun, Akar, & Batang'; 
+            }
+            else if (code === 'generatif') { 
+                colorClasses = 'bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800'; 
+                titleDesc = 'Fase 3: Pembungaan & Penyerbukan Generatif'; 
+            }
+            else if (code === 'reproduktif') { 
+                colorClasses = 'bg-pink-50 dark:bg-pink-950/60 text-pink-700 dark:text-pink-300 border-pink-200 dark:border-pink-800'; 
+                titleDesc = 'Fase 4: Pembuahan, Pengisian, & Pematangan Hasil'; 
+            }
+            else if (code === 'panen_ready') { 
+                colorClasses = 'bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-700 font-extrabold animate-pulse'; 
+                titleDesc = 'Siap Dipanen!'; 
+            }
+            else if (code === 'completed') { 
+                colorClasses = 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700'; 
+                titleDesc = 'Siklus Penanaman Telah Selesai Dipanen'; 
+            }
+
+            return `<span title="${titleDesc}" class="text-[10px] sm:text-[11px] font-bold px-2.5 py-1 rounded-full border cursor-help ${colorClasses}">${label}</span>`;
+        }
+    </script>
+</body>
+</html>
